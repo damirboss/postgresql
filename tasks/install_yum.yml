@@ -4,10 +4,17 @@
 # validate www.postgresql.org (or probably any other source).
 
   - block:
-      - name: PostgreSQL | Install all the required dependencies | yum
+      - name: PostgreSQL | Install all the required dependencies for centos/redhat < 8 | yum
         yum:
           name: ["ca-certificates","python-psycopg2", "python-pycurl", "glibc-common","epel-release","libselinux-python"]
           state: present
+        when: ansible_distribution_major_version|int < 8
+        
+      - name: PostgreSQL | Install all the required dependencies for centos/redhat >= 8 | yum
+        yum:
+          name: ["ca-certificates","python3-psycopg2", "python3-pycurl", "glibc-common","epel-release","python3-libselinux"]
+          state: present
+        when: ansible_distribution_major_version|int >= 8
 
       - name: PostgreSQL | Add PostgreSQL repository | yum
         yum_repository:
@@ -17,11 +24,19 @@
            gpgkey: "{{ postgresql_yum_repository_gpgkey }}"
         when: postgresql_install_repository
         
-      - name: PostgreSQL | Make sure the dependencies are installed | yum
+      - name: PostgreSQL | Make sure the dependencies are installed for centos/redhat < 8 | yum
         yum:
          name: ["python-psycopg2", "python-pycurl", "glibc-common","libselinux-python"]
          state: present
          update_cache: yes
+         when: ansible_distribution_major_version|int < 8
+         
+      - name: PostgreSQL | Make sure the dependencies are installed for centos/redhat >= 8 | yum
+        yum:
+         name: ["python3-psycopg2", "python3-pycurl", "glibc-common","python3-libselinux"]
+         state: present
+         update_cache: yes
+         when: ansible_distribution_major_version|int >= 8
 
       - name: PostgreSQL | Install PostgreSQL | yum
         yum:
