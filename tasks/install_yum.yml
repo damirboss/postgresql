@@ -29,7 +29,7 @@
          name: ["python-psycopg2", "python-pycurl", "glibc-common","libselinux-python"]
          state: present
          update_cache: yes
-         when: ansible_distribution_major_version|int < 8
+        when: ansible_distribution_major_version|int < 8
          
       - name: PostgreSQL | Make sure the dependencies are installed for centos/redhat >= 8 | yum
         yum:
